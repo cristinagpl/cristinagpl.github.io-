@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guided Play Learning | Play-Based Tutoring</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;500;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+  <script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
+
+  <style>
+    :root {
+      --blue-deep: #2952d9;
+      --blue-main: #3f63f2;
+      --blue-mid: #6fa9ff;
+      --blue-light: #dcecff;
+      --blue-pale: #eef6ff;
+      --yellow: #ffd763;
+      --yellow-soft: #ffefb5;
+      --text-dark: #18305f;
+      --text-body: #294268;
+      --white: #ffffff;
+      --card-shadow: 0 16px 40px rgba(41, 82, 217, 0.18);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --max-width: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Nunito", sans-serif;
+      color: var(--text-body);
+      background:
+        radial-gradient(circle at 10% 15%, rgba(255, 215, 99, 0.8) 0 48px, transparent 49px),
+        radial-gradient(circle at 85% 10%, rgba(255, 215, 99, 0.75) 0 22px, transparent 23px),
+        radial-gradient(circle at 92% 35%, rgba(255, 215, 99, 0.65) 0 56px, transparent 57px),
+        radial-gradient(circle at 8% 58%, rgba(255, 215, 99, 0.7) 0 14px, transparent 15px),
+        radial-gradient(circle at 75% 78%, rgba(255, 215, 99, 0.7) 0 24px, transparent 25px),
+        linear-gradient(180deg, #4170ff 0%, #94c2ff 38%, #d9ebff 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: auto;
+      width: 140vw;
+      height: 220px;
+      left: -20vw;
+      z-index: -1;
+      opacity: 0.4;
+      pointer-events: none;
+      border-radius: 50%;
+      filter: blur(8px);
+    }
+
+    body::before {
+      top: 120px;
+      background:
+        radial-gradient(ellipse at 20% 40%, rgba(255,255,255,0.55) 0 20%, transparent 21%),
+        radial-gradient(ellipse at 55% 50%, rgba(255,255,255,0.35) 0 24%, transparent 25%),
+        radial-gradient(ellipse at 85% 60%, rgba(255,255,255,0.4) 0 18%, transparent 19%);
+    }
+
+    body::after {
+      bottom: -50px;
+      background:
+        radial-gradient(ellipse at 18% 50%, rgba(255,255,255,0.5) 0 24%, transparent 25%),
+        radial-gradient(ellipse at 55% 55%, rgba(255,255,255,0.4) 0 28%, transparent 29%),
+        radial-gradient(ellipse at 82% 48%, rgba(255,255,255,0.45) 0 20%, transparent 21%);
+    }
+
+    .container {
+      width: min(var(--max-width), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(14px);
+      background: rgba(45, 83, 226, 0.78);
+      border-bottom: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--white);
+    }
+
+    .brand-badge {
+      width: 50px;
+      height: 50px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--yellow), #ffca43);
+      display: grid;
+      place-items: center;
+      color: var(--blue-deep);
+      font-size: 1.1rem;
+      font-weight: 900;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    }
+
+    .brand-text {
+      font-family: "Fredoka", sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.02em;
+    }
+
+    .brand-text span {
+      display: block;
+      font-size: 0.85rem;
+      font-family: "Nunito", sans-serif;
+      font-weight: 700;
+      opacity: 0.92;
+      margin-top: 4px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 0.98rem;
+    }
+
+    .nav-cta {
+      background: var(--yellow);
+      color: var(--blue-deep) !important;
+      padding: 12px 18px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 900;
+      box-shadow: 0 10px 18px rgba(0,0,0,0.08);
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.98rem;
+    }
+
+    .hero {
+      padding: 64px 0 36px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .hero-copy {
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 34px;
+      padding: 34px 30px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      background: rgba(255, 239, 181, 0.95);
+      color: var(--blue-deep);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: 900;
+      font-size: 0.9rem;
+      letter-spacing: 0.02em;
+      margin-bottom: 18px;
+    }
+
+    h1, h2, h3 {
+      font-family: "Fredoka", sans-serif;
+      color: var(--text-dark);
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 4.8rem);
+      line-height: 0.98;
+      color: var(--white);
+      text-shadow: 0 4px 18px rgba(28, 55, 130, 0.25);
+      margin-bottom: 18px;
+    }
+
+    .hero-copy p.lead {
+      font-size: 1.18rem;
+      line-height: 1.6;
+      color: #f7fbff;
+      margin: 0 0 22px;
+      font-weight: 700;
+      max-width: 62ch;
+    }
+
+    .hero-highlights {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 0 0 24px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .hero-highlights li {
+      background: rgba(255,255,255,0.9);
+      color: var(--blue-deep);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 800;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font-weight: 900;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+
+    .btn:hover,
+    .nav-cta:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: var(--yellow);
+      color: var(--blue-deep);
+      box-shadow: 0 14px 24px rgba(0,0,0,0.10);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.92);
+      color: var(--blue-deep);
+      box-shadow: 0 14px 24px rgba(0,0,0,0.08);
+    }
+
+    .hero-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(239,247,255,0.94));
+      border-radius: 34px;
+      padding: 24px;
+      box-shadow: var(--card-shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::before,
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(255, 215, 99, 0.55);
+    }
+
+    .hero-card::before {
+      width: 160px;
+      height: 160px;
+      top: -36px;
+      right: -40px;
+    }
+
+    .hero-card::after {
+      width: 90px;
+      height: 90px;
+      bottom: -20px;
+      left: -18px;
+    }
+
+    .mini-illustration {
+      background:
+        radial-gradient(circle at 20% 15%, rgba(255, 215, 99, 0.9) 0 16px, transparent 17px),
+        radial-gradient(circle at 82% 18%, rgba(111, 169, 255, 0.8) 0 12px, transparent 13px),
+        radial-gradient(circle at 78% 78%, rgba(255, 215, 99, 0.7) 0 22px, transparent 23px),
+        linear-gradient(180deg, #4d74ff 0%, #9fc7ff 45%, #eaf4ff 100%);
+      border-radius: 24px;
+      min-height: 320px;
+      padding: 26px;
+      display: flex;
+      align-items: flex-end;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .wave {
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 56%;
+      background:
+        radial-gradient(120% 80% at 10% 80%, rgba(255,255,255,0.92) 0 34%, transparent 35%),
+        radial-gradient(120% 80% at 42% 90%, rgba(255,255,255,0.84) 0 36%, transparent 37%),
+        radial-gradient(120% 80% at 78% 85%, rgba(255,255,255,0.92) 0 34%, transparent 35%);
+      opacity: 0.98;
+    }
+
+    .hero-note {
+      position: relative;
+      z-index: 2;
+      background: rgba(255, 247, 224, 0.96);
+      color: var(--text-dark);
+      border-radius: 20px;
+      padding: 18px;
+      max-width: 360px;
+      box-shadow: 0 14px 24px rgba(31, 62, 146, 0.12);
+    }
+
+    .hero-note strong {
+      display: block;
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+      color: var(--blue-deep);
+    }
+
+    section {
+      padding: 34px 0;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .section-title h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: var(--white);
+      text-shadow: 0 4px 14px rgba(28,55,130,0.18);
+      margin-bottom: 10px;
+    }
+
+    .section-title p {
+      max-width: 760px;
+      margin: 0 auto;
+      color: #f6fbff;
+      font-size: 1.07rem;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    .about-panel,
+    .contact-panel,
+    .cta-panel {
+      background: rgba(255,255,255,0.92);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .about-panel p,
+    .contact-panel p,
+    .cta-panel p {
+      font-size: 1.04rem;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .services-grid,
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .service-card,
+    .benefit-card {
+      background: linear-gradient(180deg, rgba(49, 83, 226, 0.96), rgba(79, 108, 240, 0.96));
+      color: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--card-shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .service-card::after,
+    .benefit-card::after {
+      content: "";
+      position: absolute;
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: rgba(255, 215, 99, 0.22);
+      right: -12px;
+      bottom: -16px;
+    }
+
+    .service-icon,
+    .benefit-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.16);
+      font-size: 0.9rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+    }
+
+    .service-card h3,
+    .benefit-card h3 {
+      color: var(--white);
+      font-size: 1.45rem;
+      margin-bottom: 10px;
+    }
+
+    .service-card p,
+    .benefit-card p {
+      margin: 0;
+      line-height: 1.65;
+      font-size: 1rem;
+      color: rgba(255,255,255,0.97);
+      font-weight: 600;
+    }
+
+    .benefits-grid .benefit-card {
+      background: rgba(255,255,255,0.93);
+      color: var(--text-body);
+    }
+
+    .benefits-grid .benefit-card h3 {
+      color: var(--blue-deep);
+    }
+
+    .benefits-grid .benefit-card p {
+      color: var(--text-body);
+    }
+
+    .benefit-icon {
+      background: var(--yellow-soft);
+      color: var(--blue-deep);
+    }
+
+    .free-session {
+      padding-top: 8px;
+    }
+
+    .cta-panel {
+      background: linear-gradient(180deg, #fff6cf 0%, #fffdf2 100%);
+      text-align: center;
+      padding: 32px 24px;
+    }
+
+    .cta-panel .pill {
+      display: inline-block;
+      background: var(--blue-deep);
+      color: var(--white);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 0.92rem;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    .cta-panel h2 {
+      color: var(--blue-deep);
+      text-shadow: none;
+      margin-bottom: 12px;
+    }
+
+    .cta-panel p {
+      max-width: 700px;
+      margin: 0 auto 22px;
+      color: var(--text-dark);
+      font-weight: 700;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .contact-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 26px;
+      align-items: start;
+    }
+
+    .contact-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: var(--blue-pale);
+    }
+
+    .contact-item .icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: var(--yellow);
+      color: var(--blue-deep);
+      font-size: 0.72rem;
+      font-weight: 900;
+      flex: 0 0 auto;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .contact-item strong {
+      display: block;
+      color: var(--blue-deep);
+      margin-bottom: 2px;
+      font-size: 0.98rem;
+    }
+
+    .contact-item a,
+    .contact-item span {
+      color: var(--text-body);
+      text-decoration: none;
+      font-weight: 800;
+      word-break: break-word;
+    }
+
+    .contact-box {
+      background: linear-gradient(180deg, rgba(63, 99, 242, 0.95), rgba(84, 112, 238, 0.95));
+      color: var(--white);
+      border-radius: 24px;
+      padding: 24px;
+      min-height: 100%;
+    }
+
+    .contact-box h3 {
+      color: var(--white);
+      margin-bottom: 10px;
+      font-size: 1.6rem;
+    }
+
+    .contact-box p {
+      color: rgba(255,255,255,0.96);
+      margin-bottom: 18px;
+      font-weight: 700;
+    }
+
+    .contact-box ul {
+      margin: 0;
+      padding-left: 18px;
+      line-height: 1.8;
+      font-weight: 700;
+    }
+
+    footer {
+      padding: 24px 0 42px;
+      color: rgba(255,255,255,0.94);
+    }
+
+    .footer-wrap {
+      text-align: center;
+      font-weight: 800;
+      font-size: 0.98rem;
+    }
+
+    .footer-wrap a {
+      color: var(--white);
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .contact-panel,
+      .services-grid,
+      .benefits-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav-links {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        width: min(calc(100% - 20px), var(--max-width));
+      }
+
+      .hero {
+        padding-top: 34px;
+      }
+
+      .hero-copy,
+      .hero-card,
+      .about-panel,
+      .contact-panel,
+      .cta-panel {
+        padding: 22px 18px;
+      }
+
+      h1 {
+        font-size: 2.3rem;
+      }
+
+      .hero-copy p.lead,
+      .section-title p,
+      .service-card p,
+      .benefit-card p,
+      .about-panel p,
+      .cta-panel p,
+      .contact-panel p {
+        font-size: 1rem;
+      }
+
+      .nav-links {
+        gap: 14px;
+      }
+
+      .nav-cta,
+      .btn {
+        width: 100%;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <script>
+    const CALENDLY_URL = "https://calendly.com/tu-usuario/tu-evento";
+
+    function openCalendly() {
+      if (typeof Calendly !== "undefined") {
+        Calendly.initPopupWidget({ url: CALENDLY_URL });
+      } else {
+        window.open(CALENDLY_URL, "_blank");
+      }
+      return false;
+    }
+  </script>
+
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="#top" aria-label="Guided Play Learning home">
+        <div class="brand-badge">GPL</div>
+        <div class="brand-text">
+          Guided Play Learning
+          <span>Play-Based Tutoring</span>
+        </div>
+      </a>
+
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#benefits">Why Families Choose Us</a>
+        <a href="#contact">Contact</a>
+        <button class="nav-cta" onclick="openCalendly()">Book Free Intro</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow">Play-based learning for curious minds</div>
+
+          <h1>
+            Learning that feels
+            like play
+          </h1>
+
+          <p class="lead">
+            Personalized, one-on-one support designed to help children grow through
+            guided play, creativity, exploration, and academic enrichment.
+          </p>
+
+          <ul class="hero-highlights">
+            <li>PreK–12 support</li>
+            <li>In-home sessions</li>
+            <li>Academic + developmental focus</li>
+            <li>Free intro session</li>
+          </ul>
+
+          <div class="hero-actions">
+            <button class="btn btn-primary" onclick="openCalendly()">Book a Free Intro Session</button>
+            <a class="btn btn-secondary" href="#services">Explore Services</a>
+          </div>
+        </div>
+
+        <div class="hero-card">
+          <div class="mini-illustration">
+            <div class="wave"></div>
+            <div class="hero-note">
+              <strong>Led by educator Cristina</strong>
+              With a background in child development and behavior-based learning,
+              each session is thoughtfully personalized to your child’s interests,
+              pace, and developmental goals.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="container">
+        <div class="section-title">
+          <h2>Joyful, structured, personalized</h2>
+          <p>
+            Guided Play Learning is built for families who want educational support
+            that feels warm, engaging, and intentional. The tone is child-friendly,
+            but the value proposition is clear for adults: confidence, skill-building,
+            communication, and real understanding.
+          </p>
+        </div>
+
+        <div class="about-panel">
+          <p>
+            We help children learn through guided play, creativity, and exploration.
+            Sessions are designed to support both developmental growth and academic
+            progress in a low-pressure, individualized format. Rather than relying on
+            rote instruction alone, each experience is planned to encourage
+            problem-solving, communication, curiosity, and confidence.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="services">
+      <div class="container">
+        <div class="section-title">
+          <h2>Services</h2>
+          <p>
+            Current offerings include guided play learning sessions, introductory
+            sessions, and academic support sessions. These are adapted to the child’s
+            needs and family goals.
+          </p>
+        </div>
+
+        <div class="services-grid">
+          <article class="service-card">
+            <div class="service-icon">Play</div>
+            <h3>Guided Play Learning</h3>
+            <p>
+              Thoughtfully planned sessions built around your child’s interests and
+              developmental goals. Activities encourage creativity, communication,
+              problem-solving, and meaningful learning through play.
+            </p>
+          </article>
+
+          <article class="service-card">
+            <div class="service-icon">Intro</div>
+            <h3>Introductory Session</h3>
+            <p>
+              A comfortable, low-pressure first session designed to observe how your
+              child thinks, plays, and learns so future sessions can be personalized
+              with care.
+            </p>
+          </article>
+
+          <article class="service-card">
+            <div class="service-icon">Learn</div>
+            <h3>Academic Support</h3>
+            <p>
+              Individualized academic reinforcement with guided practice, assignment
+              support, concept review, and strategies that meet your child where they are.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="benefits">
+      <div class="container">
+        <div class="section-title">
+          <h2>Why families respond to this</h2>
+          <p>
+            The design and messaging should feel inviting to children, but credible to
+            parents. That means emphasizing developmental expertise, personalization,
+            structure, and outcomes without losing warmth.
+          </p>
+        </div>
+
+        <div class="benefits-grid">
+          <article class="benefit-card">
+            <div class="benefit-icon">Home</div>
+            <h3>Convenient format</h3>
+            <p>
+              One-on-one sessions can be offered in-home, which reduces friction for
+              families and supports a comfortable learning environment.
+            </p>
+          </article>
+
+          <article class="benefit-card">
+            <div class="benefit-icon">Focus</div>
+            <h3>Whole-child support</h3>
+            <p>
+              Sessions can strengthen academics while also supporting communication,
+              confidence, social development, and engagement.
+            </p>
+          </article>
+
+          <article class="benefit-card">
+            <div class="benefit-icon">Active</div>
+            <h3>Hands-on learning</h3>
+            <p>
+              Activities are interactive and concrete, which helps children stay
+              engaged while building real understanding.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="free-session">
+      <div class="container">
+        <div class="cta-panel">
+          <div class="pill">Free intro session</div>
+          <h2>Start with a simple first conversation</h2>
+          <p>
+            Parents can begin with an introductory session to see whether the approach
+            is a strong fit for their child’s needs, temperament, and goals.
+          </p>
+          <div class="cta-row">
+            <button class="btn btn-primary" onclick="openCalendly()">Book Today</button>
+            <a class="btn btn-secondary" href="mailto:cristina@guidedplaylearning.com">Email Cristina</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="container">
+        <div class="section-title">
+          <h2>Contact</h2>
+          <p>
+            Reach out by email or use the booking button to schedule an introductory session.
+          </p>
+        </div>
+
+        <div class="contact-panel">
+          <div>
+            <div class="contact-list">
+              <div class="contact-item">
+                <div class="icon">Area</div>
+                <div>
+                  <strong>Service area</strong>
+                  <span>Boston Area</span>
+                </div>
+              </div>
+
+              <div class="contact-item">
+                <div class="icon">Mail</div>
+                <div>
+                  <strong>Email</strong>
+                  <a href="mailto:cristina@guidedplaylearning.com">cristina@guidedplaylearning.com</a>
+                </div>
+              </div>
+
+              <div class="contact-item">
+                <div class="icon">Web</div>
+                <div>
+                  <strong>Website</strong>
+                  <a href="https://www.guidedplaylearning.com" target="_blank" rel="noopener noreferrer">
+                    www.guidedplaylearning.com
+                  </a>
+                </div>
+              </div>
+
+              <div class="contact-item">
+                <div class="icon">Text</div>
+                <div>
+                  <strong>Phone / text</strong>
+                  <span>Use your preferred booking number here</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="contact-box">
+            <h3>For parents</h3>
+            <p>
+              This section is intentionally written for adult decision-makers.
+              It keeps the playful visual identity, while answering the practical
+              questions parents usually have.
+            </p>
+            <ul>
+              <li>Who is leading the sessions?</li>
+              <li>What ages are served?</li>
+              <li>What makes this different from tutoring?</li>
+              <li>How does the introductory session work?</li>
+              <li>How do I schedule?</li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-wrap">
+      Guided Play Learning • Play-Based Tutoring for Curious Minds •
+      <a href="mailto:cristina@guidedplaylearning.com">cristina@guidedplaylearning.com</a>
+    </div>
+  </footer>
+</body>
